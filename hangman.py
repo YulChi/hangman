@@ -70,6 +70,23 @@ def getRandomWord(wordList):
     wordIndex = random.randint(0, len(wordList) - 1)
     return wordList[wordIndex]
 
+def countScore(correctLetters, secretWord):
+    score = 0
+    for i in range(len(secretWord)):
+        if secretWord[i] in correctLetters:
+            score += 10
+    return score
+
+def bestScore(score):
+    rf = open('score.txt', 'r')
+    best = rf.read()
+    if score > int(best):
+        wf = open('score.txt', 'w')
+        wf.write(str(score))
+        return score
+    return int(best)
+
+
 def displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord):
     print(HANGMANPICS[len(missedLetters)])
     print()
@@ -133,6 +150,8 @@ def main():
     gameSucceeded = False
     gameFailed = False
     secretWord = getRandomWord(readWordList())
+    print('Best score is ', end='')
+    print(bestScore(countScore(correctLetters, secretWord)))
 
     while True:
         displayBoard(HANGMANPICS, missedLetters, correctLetters, secretWord)
@@ -142,6 +161,11 @@ def main():
                 print('Yes! The secret word is "' + secretWord + '"! You have won!')
             else:
                 print('You have run out of guesses!\nAfter ' + str(len(missedLetters)) + ' missed guesses and ' + str(len(correctLetters)) + ' correct guesses, the word was "' + secretWord + '"')
+
+            print('Your score is ', end='')
+            print(countScore(correctLetters, secretWord))
+            if bestScore(countScore(correctLetters, secretWord)) < countScore(correctLetters, secretWord):
+                print('Congratulation! You renewed best record!')
 
             # Ask the player if they want to play again (but only if the game is done).
             if playAgain():
